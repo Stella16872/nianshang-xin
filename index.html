@@ -231,8 +231,9 @@
   .edit-btn:hover { opacity: 1; color: var(--accent); }
   .msg-row.editing { flex-direction: column; width: 100%; }
   .edit-textarea {
-    width: 100%; min-height: 64px; border: 1px solid var(--accent); border-radius: 10px;
+    width: 100%; min-height: 90px; border: 1px solid var(--accent); border-radius: 10px;
     padding: 10px; font-family: inherit; font-size: 13.5px; line-height: 1.6; color: var(--ink);
+    background: var(--bubble);
   }
   .edit-btn-row { display: flex; gap: 8px; margin-top: 6px; }
   .edit-save-btn {
@@ -256,6 +257,105 @@
     padding: 7px 14px; border-radius: 14px; margin: 4px 0;
   }
   .system-pill:hover { background: rgba(201,161,95,0.2); }
+
+  .event-overlay {
+    position: absolute; inset: 0; background: rgba(10,7,13,0.72);
+    display: flex; align-items: center; justify-content: center; z-index: 20; padding: 24px;
+  }
+  .event-card {
+    width: 100%; max-width: 360px; background: var(--header);
+    border: 1px solid rgba(201,161,95,0.35); border-radius: 16px; padding: 20px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .event-tag {
+    display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: 1px;
+    background: rgba(201,161,95,0.18); color: var(--accent-soft);
+    padding: 4px 10px; border-radius: 8px; margin-bottom: 10px;
+  }
+  .event-title { font-size: 17px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+  .event-desc { font-size: 13px; line-height: 1.7; color: var(--muted); margin-bottom: 16px; }
+  .event-choice-btn {
+    display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+    width: 100%; text-align: left; background: var(--bubble); border: 1px solid var(--line);
+    border-radius: 10px; padding: 11px 14px; margin-bottom: 8px; cursor: pointer; font-family: inherit;
+  }
+  .event-choice-btn:hover { border-color: var(--accent); }
+  .event-choice-btn .ec-label { font-size: 13.5px; color: var(--ink); font-weight: 700; }
+  .event-choice-btn .ec-effect { font-size: 11.5px; color: var(--accent-soft); }
+
+  /* ---------- 电话通话 ---------- */
+  .call-screen {
+    position: absolute; inset: 0; background: #0d0912; z-index: 30;
+    display: flex; flex-direction: column; align-items: center; overflow: hidden;
+  }
+  .call-stars {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.7;
+    background-image:
+      radial-gradient(circle at 15% 18%, rgba(255,255,255,0.5) 0, transparent 1.5%),
+      radial-gradient(circle at 78% 12%, rgba(255,255,255,0.4) 0, transparent 1.5%),
+      radial-gradient(circle at 55% 30%, rgba(255,255,255,0.3) 0, transparent 1%),
+      radial-gradient(circle at 25% 65%, rgba(255,255,255,0.35) 0, transparent 1.2%),
+      radial-gradient(circle at 88% 75%, rgba(255,255,255,0.3) 0, transparent 1%),
+      radial-gradient(circle at 40% 88%, rgba(255,255,255,0.25) 0, transparent 1%);
+  }
+  .call-top { margin-top: 46px; font-size: 12px; letter-spacing: 3px; color: var(--muted); z-index: 1; }
+  .call-avatar-wrap { margin-top: 36px; z-index: 1; }
+  .call-avatar-wrap.small { margin-top: 40px; }
+  .call-avatar {
+    width: 140px; height: 140px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 48px; font-weight: 700; color: #fff; box-shadow: 0 0 60px rgba(201,161,95,0.35);
+  }
+  .call-avatar-wrap.small .call-avatar { width: 88px; height: 88px; font-size: 30px; box-shadow: 0 0 40px rgba(201,161,95,0.3); }
+  .call-name { margin-top: 20px; font-size: 22px; font-weight: 700; color: var(--ink); z-index: 1; }
+  .call-preview {
+    margin-top: 14px; font-size: 13.5px; color: var(--muted); text-align: center; max-width: 280px; z-index: 1; line-height: 1.7;
+  }
+  .call-actions { margin-top: auto; margin-bottom: 12px; display: flex; gap: 60px; z-index: 1; }
+  .call-action-btn {
+    width: 64px; height: 64px; border-radius: 50%; border: none; font-size: 22px;
+    display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .call-action-btn.decline { background: #d9534f; color: #fff; transform: rotate(135deg); }
+  .call-action-btn.accept { background: #5cb85c; color: #fff; }
+  .call-action-labels { display: flex; gap: 46px; margin-bottom: 34px; font-size: 11px; color: var(--muted); z-index: 1; }
+
+  .call-status { margin-top: 6px; font-size: 11px; color: var(--muted); letter-spacing: 2px; z-index: 1; }
+  .call-timer { margin-top: 4px; font-size: 13px; color: var(--muted); z-index: 1; }
+  .call-transcript {
+    flex: 1; width: 100%; overflow-y: auto; padding: 16px 22px; display: flex; flex-direction: column; gap: 10px; z-index: 1;
+  }
+  .call-line-char { align-self: flex-start; max-width: 85%; font-size: 14px; line-height: 1.6; color: var(--ink); font-style: italic; }
+  .call-line-player { align-self: flex-end; max-width: 85%; font-size: 13.5px; line-height: 1.6; color: var(--accent-soft); }
+  .call-input-row { width: 100%; display: flex; gap: 8px; padding: 10px 16px; z-index: 1; box-sizing: border-box; }
+  .call-input-row input {
+    flex: 1; border: 1px solid rgba(255,255,255,0.15); background: rgba(255,255,255,0.05);
+    border-radius: 20px; padding: 10px 15px; color: var(--ink); font-family: inherit; font-size: 13.5px;
+  }
+  .call-input-row button {
+    width: 38px; height: 38px; border-radius: 50%; border: none; background: var(--accent);
+    color: #241D2B; font-size: 14px; cursor: pointer; flex-shrink: 0;
+  }
+  .call-hangup-btn {
+    width: 56px; height: 56px; border-radius: 50%; border: none; background: #d9534f; color: #fff;
+    font-size: 22px; margin: 14px 0 22px 0; transform: rotate(135deg); cursor: pointer; z-index: 1;
+  }
+  .call-minimize {
+    position: absolute; top: 16px; left: 16px; background: none; border: none;
+    color: var(--muted); font-size: 20px; cursor: pointer; z-index: 2;
+  }
+
+  .thought-card {
+    align-self: flex-start; max-width: 92%; margin-top: -2px;
+    border: 1px dashed rgba(201,161,95,0.4); border-radius: 10px; overflow: hidden;
+    background: rgba(201,161,95,0.05);
+  }
+  .thought-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 7px 12px; font-size: 11px; color: var(--accent-soft); cursor: pointer; letter-spacing: 0.5px;
+  }
+  .thought-body {
+    padding: 0 12px 10px 12px; font-size: 12.5px; line-height: 1.7; color: var(--muted); font-style: italic;
+  }
 
   .narration-block {
     font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
@@ -522,8 +622,16 @@ const App = {
   settingsTestMsg: "",
   lastSegmentCount: 0,
   lastAppliedDelta: 0,
+  pendingEventPopup: null,
+  _skipNextDelta: false,
+  callState: null,
+  callThread: [],
+  callPreviewLine: "",
+  callBusy: false,
+  callSeconds: 0,
   feed: [],
   feedBusy: false,
+  pendingComments: new Set(),
 
   async init(){
     try {
@@ -593,6 +701,41 @@ const App = {
 
     if (this.feed.length === 0) {
       this.refreshFeed();
+    }
+    this.checkProactiveMessages();
+  },
+
+  async checkProactiveMessages(){
+    const now = Date.now();
+    const eligible = this.roster.filter(c => {
+      if (!c.lastVisitedAt || c.pendingMessage) return false;
+      const hours = (now - new Date(c.lastVisitedAt).getTime()) / 3600000;
+      return hours >= 3;
+    });
+    if (!eligible.length) return;
+    const pick = eligible[Math.floor(Math.random() * eligible.length)];
+    if (Math.random() < 0.6) {
+      await this.generateProactiveMessage(pick);
+    }
+  },
+
+  async generateProactiveMessage(char){
+    try {
+      const prompt = `你在扮演角色主动给玩家发一条消息——玩家有一段时间没理TA了，TA现在主动找玩家。
+角色人设：${this.charSummaryForFeed(char)}
+请写一条TA会主动发出的消息（口语化、符合性格与说话方式，15-40字，可以是想念、抱怨没回消息、分享一件小事等，如果是外语角色按语言混搭比例适当混英文）。
+请只输出如下格式的JSON（不要有其它任何文字）：
+{"text":"..."}`;
+      let raw = await this.callAI(prompt);
+      raw = raw.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(raw);
+      if (parsed.text) {
+        char.pendingMessage = { text: parsed.text, createdAt: new Date().toISOString() };
+        await this.saveRoster();
+        if (this.screen === "home") this.render();
+      }
+    } catch(e) {
+      console.error(e);
     }
   },
 
@@ -748,6 +891,15 @@ const App = {
     this.render();
   },
 
+  async togglePin(id, ev){
+    ev.stopPropagation();
+    const char = this.roster.find(c => c.id === id);
+    if (!char) return;
+    char.pinned = !char.pinned;
+    await this.saveRoster();
+    this.render();
+  },
+
   async loadConversation(charId){
     try {
       const r = await window.storage.get("convo:" + charId, false);
@@ -756,7 +908,7 @@ const App = {
   },
 
   async saveConversation(charId){
-    const data = { thread: this.thread, choices: this.currentChoices, pendingMemory: this._pendingMemory || "" };
+    const data = { thread: this.thread, choices: this.currentChoices, pendingMemory: this._pendingMemory || "", eventPopup: this.pendingEventPopup || null };
     try { await window.storage.set("convo:" + charId, JSON.stringify(data), false); } catch(e){ console.error(e); }
   },
 
@@ -766,6 +918,7 @@ const App = {
     this.currentChoices = null;
     this._pendingMemory = "";
     this.fetchError = false;
+    this.pendingEventPopup = null;
     try { await window.storage.delete("convo:" + charId, false); } catch(e){}
     this.waitingReply = true;
     this.render();
@@ -775,15 +928,34 @@ const App = {
   async openStory(id){
     this.activeCharId = id;
     this.fetchError = false;
+    this.pendingEventPopup = null;
+    const char = this.roster.find(c => c.id === id);
+    const hadPendingMsg = !!(char && char.pendingMessage);
+    let injectedMsg = null;
+    if (char) {
+      if (hadPendingMsg) { injectedMsg = char.pendingMessage; char.pendingMessage = null; }
+      char.lastVisitedAt = new Date().toISOString();
+      await this.saveRoster();
+    }
+
     const saved = await this.loadConversation(id);
     if (saved && saved.thread && saved.thread.length) {
       this.thread = saved.thread;
       this.currentChoices = saved.choices || null;
       this._pendingMemory = saved.pendingMemory || "";
+      this.pendingEventPopup = saved.eventPopup || null;
       this.waitingReply = false;
       this.screen = "story";
       this.render();
-      if (!this.currentChoices) {
+      if (injectedMsg) {
+        this.thread.push({ type: "dialogue", text: injectedMsg.text, stageLabel: getStage(char.trust).label });
+        this.currentChoices = null;
+        this._skipNextDelta = true;
+        this.waitingReply = true;
+        this.render();
+        await this.saveConversation(id);
+        await this.fetchNextScene();
+      } else if (!this.currentChoices) {
         this.waitingReply = true;
         await this.fetchNextScene();
       }
@@ -792,9 +964,127 @@ const App = {
       this.currentChoices = null;
       this.waitingReply = true;
       this.screen = "story";
+      if (injectedMsg) {
+        this.thread.push({ type: "dialogue", text: injectedMsg.text, stageLabel: getStage(char.trust).label });
+        this._skipNextDelta = true;
+      }
       this.render();
       await this.fetchNextScene();
     }
+  },
+
+  // ---------------- 电话通话 ----------------
+  startCall(charId){
+    this.activeCharId = charId;
+    this.callThread = [];
+    this.callPreviewLine = "";
+    this.callSeconds = 0;
+    this.callState = "incoming";
+    this.screen = "call";
+    this.render();
+    this.fetchCallPreview();
+    this.ringTimeout = setTimeout(() => {
+      if (this.callState === "incoming") this.declineCall();
+    }, 20000);
+  },
+
+  async fetchCallPreview(){
+    const char = this.roster.find(c => c.id === this.activeCharId);
+    if (!char) return;
+    try {
+      const prompt = `你在扮演角色给玩家打电话，这是电话接通前的一句"预览文案"（类似来电铃声响起时手机上显示的一句话）。
+角色人设：${this.charSummaryForFeed(char)}
+请写一句符合这个角色性格和说话方式的来电预览文案（10-20字，口语化，可以带点情绪或悬念）。
+请只输出如下格式的JSON（不要有其它任何文字）：
+{"line":"..."}`;
+      let raw = await this.callAI(prompt);
+      raw = raw.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(raw);
+      this.callPreviewLine = parsed.line || "接电话。";
+    } catch(e) {
+      this.callPreviewLine = "接电话。";
+    }
+    if (this.callState === "incoming") this.render();
+  },
+
+  declineCall(){
+    clearTimeout(this.ringTimeout);
+    this.callState = null;
+    this.screen = "story";
+    this.render();
+  },
+
+  acceptCall(){
+    clearTimeout(this.ringTimeout);
+    this.callThread.push({ speaker: "char", text: this.callPreviewLine || "喂？" });
+    this.callState = "active";
+    this.callSeconds = 0;
+    this.render();
+    this.startCallTimer();
+  },
+
+  startCallTimer(){
+    this.stopCallTimer();
+    this._callTimerId = setInterval(() => {
+      this.callSeconds++;
+      const el = document.getElementById("callTimerDisplay");
+      if (el) {
+        const m = Math.floor(this.callSeconds / 60);
+        const s = this.callSeconds % 60;
+        el.textContent = (m<10?"0":"")+m + ":" + (s<10?"0":"")+s;
+      }
+    }, 1000);
+  },
+
+  stopCallTimer(){
+    if (this._callTimerId) { clearInterval(this._callTimerId); this._callTimerId = null; }
+  },
+
+  hangupCall(){
+    this.stopCallTimer();
+    this.callState = null;
+    this.screen = "story";
+    this.render();
+  },
+
+  async sendCallLine(text){
+    const trimmed = (text || "").trim();
+    if (!trimmed || this.callBusy) return;
+    const char = this.roster.find(c => c.id === this.activeCharId);
+    if (!char) return;
+    this.callThread.push({ speaker: "player", text: trimmed });
+    this.render();
+    this.callBusy = true;
+    this.render();
+    try {
+      const stage = getStage(char.trust);
+      const transcript = this.callThread.map(t => (t.speaker === "char" ? char.name : (this.profile ? this.profile.name : "你")) + "：" + t.text).join("\n");
+      const prompt = `你在扮演角色接玩家的电话，这是一通正在进行的电话，只有声音，没有画面。
+角色人设：${this.charSummaryForFeed(char)}
+当前关系阶段：${stage.label}
+通话记录（按顺序）：
+${transcript}
+
+请写角色接下来说的一句话（口语化、符合性格与说话方式，20-50字，如果是外语角色按语言混搭比例适当混英文），并评估玩家刚才那句话对关系的影响，给出trustDelta（-3到6之间的整数）。如果这句话里有值得记住的具体事情，写入memoryNote（不超过20字），否则留空。
+请只输出如下格式的JSON（不要有其它任何文字）：
+{"line":"...","trustDelta":0,"memoryNote":""}`;
+      let raw = await this.callAI(prompt);
+      raw = raw.replace(/```json|```/g, "").trim();
+      const parsed = JSON.parse(raw);
+      char.trust = Math.max(0, char.trust + (parseInt(parsed.trustDelta) || 0));
+      if (parsed.memoryNote) {
+        char.memory = char.memory || [];
+        char.memory.push(parsed.memoryNote);
+        if (char.memory.length > 8) char.memory.shift();
+      }
+      this.callThread.push({ speaker: "char", text: parsed.line || "……" });
+      await this.saveRoster();
+    } catch(e) {
+      console.error(e);
+      this.callThread.push({ speaker: "char", text: "（信号好像不太好……）" });
+    }
+    this.callBusy = false;
+    this.render();
   },
 
   // ---------------- AI 调用 ----------------
@@ -876,11 +1166,12 @@ ${recentHistory}
    - 另外附一句"subtext"潜台词（这句话/这个动作背后玩家的真实心思，10-16字）
 5. 新增一个字段"lastActionTrustDelta"：根据【最近剧情回顾】里最后一条"【你】"的发言或行动，评价它对这段关系的影响，给出一个-4到12之间的整数。如果这是开场、还没有玩家的行动，这个字段填0。
 6. 如果这段剧情里发生了值得记住的具体事情（比如透露了某个爱好、恐惧、习惯、约定），用不超过20字的一句话写入memoryNote；如果没有特别值得记的内容，memoryNote返回空字符串。
-7. 涉及亲密或身体接触的情节，只写到暧昧张力、心理描写和克制的动作为止，不要写具体的身体/性描写，关键时刻可以用留白或转场处理。
-8. 额外判断：这一幕有没有可能被外人拍到、认出、偶遇、截图或以其他方式流出到网络上（比如被狗仔拍到、被路人认出合影、被粉丝偶遇、被朋友截图转发等）？如果有，用一句客观描述（不超过30字，只写外人会看到的画面/内容本身，不要写心理活动）写入publicIncident字段；如果没有这种可能性，publicIncident留空字符串。不要为了流出而流出——大多数日常场景都不会有，只有真正有戏剧性、暴露性、外人会感兴趣的时刻才触发（比如被拍到亲密瞬间、公众人物身份的角色被偶遇、绯闻线索等）。
+7. 额外判断：这一幕有没有可能被外人拍到、认出、偶遇、截图或以其他方式流出到网络上（比如被狗仔拍到、被路人认出合影、被粉丝偶遇、被朋友截图转发等）？如果有，用一句客观描述（不超过30字，只写外人会看到的画面/内容本身，不要写心理活动）写入publicIncident字段；如果没有这种可能性，publicIncident留空字符串。不要为了流出而流出——大多数日常场景都不会有，只有真正有戏剧性、暴露性、外人会感兴趣的时刻才触发（比如被拍到亲密瞬间、公众人物身份的角色被偶遇、绯闻线索等）。
+8. 额外判断：这一幕是否适合变成一个需要玩家立刻做决定的"紧急弹窗事件"（比如私信被骚扰轰炸、网络暴力、身份曝光危机、绯闻发酵到失控、粉丝闹翻天等突发状况，不限于这些例子）。如果适合，写入eventPopup字段：{"tag":"简短标签，比如'危机来袭'","title":"标题","description":"1-2句情境描述","choices":[{"label":"选项按钮文字","effectText":"这个选择带来的效果反馈文字，风格随情境自定，比如'粉丝+3万 压力：低'或'他的疑心 加重了'","trustDelta":整数}]}（2-3个choices）；如果这一幕不需要弹窗事件，eventPopup填null。这个不需要每次都出现，只有真正紧急、需要玩家马上抉择的时刻才触发，大多数日常场景都不需要。
+9. 额外判断：这一幕角色表面的言行和内心真实想法之间，有没有明显到值得一提的反差（比如嘴上刻薄心里却慌得要命、表面冷淡内心早已心动）？如果有，写一段第一人称的内心独白（innerThought字段），TA自己的口吻，语言可以粗粝、破碎、口语化，不用讲究文采，越真实越好，40-90字；如果这一幕没有这种明显反差、内心和言行基本一致，innerThought留空字符串。不需要每一幕都有，大概三五幕出现一次比较自然，出现得太频繁会失去惊喜感。
 
 请只输出如下格式的JSON（不要有其它任何文字）：
-{"segments":[{"type":"narration","text":"..."},{"type":"dialogue","text":"..."}],"choices":[{"action":"...","line":"...","subtext":"..."},{"action":"...","line":"...","subtext":"..."},{"action":"...","line":"...","subtext":"..."}],"lastActionTrustDelta":0,"memoryNote":"...","publicIncident":""}`;
+{"segments":[{"type":"narration","text":"..."},{"type":"dialogue","text":"..."}],"choices":[{"action":"...","line":"...","subtext":"..."},{"action":"...","line":"...","subtext":"..."},{"action":"...","line":"...","subtext":"..."}],"lastActionTrustDelta":0,"memoryNote":"...","publicIncident":"","eventPopup":null,"innerThought":"..."}`;
   },
 
   async callClaude(promptText){
@@ -939,20 +1230,27 @@ ${recentHistory}
     this.waitingReply = true;
     this.renderTypingOnly();
     try {
-      const isOpening = this.thread.length === 0;
-      const prompt = this.buildPrompt(char, isOpening);
+      const trueOpening = this.thread.length === 0;
+      const skipDelta = trueOpening || this._skipNextDelta;
+      if (this._skipNextDelta) this._skipNextDelta = false;
+      const prompt = this.buildPrompt(char, trueOpening);
       let raw = await this.callAI(prompt);
       raw = raw.replace(/```json|```/g, "").trim();
       const parsed = JSON.parse(raw);
-      const deltaApplied = isOpening ? 0 : (parseInt(parsed.lastActionTrustDelta) || 0);
-      if (!isOpening) {
+      const deltaApplied = skipDelta ? 0 : (parseInt(parsed.lastActionTrustDelta) || 0);
+      if (!skipDelta) {
         char.trust = Math.max(0, char.trust + deltaApplied);
       }
       const stageLabelNow = getStage(char.trust).label;
       let segCount = 0;
-      (parsed.segments || []).forEach((seg, i) => {
+      const segList = parsed.segments || [];
+      segList.forEach((seg, i) => {
         const entry = { type: seg.type === "dialogue" ? "dialogue" : "narration", text: seg.text };
         if (i === 0) entry.stageLabel = stageLabelNow;
+        if (i === segList.length - 1 && parsed.innerThought) {
+          entry.innerThought = parsed.innerThought;
+          entry.revealed = false;
+        }
         this.thread.push(entry);
         segCount++;
       });
@@ -965,6 +1263,12 @@ ${recentHistory}
       }));
       this._pendingMemory = parsed.memoryNote || "";
       this.waitingReply = false;
+      if (parsed.eventPopup && parsed.eventPopup.choices && parsed.eventPopup.choices.length) {
+        this.pendingEventPopup = parsed.eventPopup;
+        this.currentChoices = null;
+      } else {
+        this.pendingEventPopup = null;
+      }
       if (parsed.publicIncident) {
         this.thread.push({ type: "system", text: "📰 这一幕被传到了网上", incidentText: parsed.publicIncident });
         this.lastSegmentCount += 1;
@@ -992,6 +1296,27 @@ ${recentHistory}
       char.memory.push(this._pendingMemory);
       if (char.memory.length > 8) char.memory.shift();
     }
+    this.currentChoices = null;
+    this.fetchError = false;
+    await this.saveRoster();
+    await this.saveConversation(this.activeCharId);
+    this.render();
+    await this.fetchNextScene();
+  },
+
+  async pickEventPopupChoice(idx){
+    if (this.waitingReply || !this.pendingEventPopup) return;
+    const char = this.roster.find(c=>c.id===this.activeCharId);
+    const choice = this.pendingEventPopup.choices[idx];
+    if (!choice) return;
+    char.trust = Math.max(0, char.trust + (parseInt(choice.trustDelta) || 0));
+    this.thread.push({ type: "system", text: "「" + choice.label + "」" + (choice.effectText ? "　" + choice.effectText : "") });
+    if (this._pendingMemory) {
+      char.memory = char.memory || [];
+      char.memory.push(this._pendingMemory);
+      if (char.memory.length > 8) char.memory.shift();
+    }
+    this.pendingEventPopup = null;
     this.currentChoices = null;
     this.fetchError = false;
     await this.saveRoster();
@@ -1049,6 +1374,7 @@ ${recentHistory}
     if (this.screen === "settings") return this.renderSettings(root);
     if (this.screen === "memory") return this.renderMemory(root);
     if (this.screen === "feed") return this.renderFeed(root);
+    if (this.screen === "call") return this.renderCall(root);
     return this.renderHome(root);
   },
 
@@ -1097,25 +1423,46 @@ ${recentHistory}
       scroll.appendChild(empty);
     }
 
-    this.roster.forEach(c => {
+    const sortedRoster = [...this.roster].sort((a, b) => {
+      const score = c => (c.pendingMessage ? 2 : 0) + (c.pinned ? 1 : 0);
+      return score(b) - score(a);
+    });
+    sortedRoster.forEach(c => {
       const stage = getStage(c.trust);
       const card = document.createElement("div");
       card.className = "char-card";
+      if (c.pinned) card.style.borderColor = "var(--accent)";
       card.onclick = () => this.openStory(c.id);
 
       const av2 = document.createElement("div");
       av2.className = "avatar";
       av2.style.background = `hsl(${hashHue(c.name)},50%,50%)`;
       av2.style.width = "46px"; av2.style.height = "46px"; av2.style.fontSize="18px";
+      av2.style.position = "relative";
       av2.textContent = c.name.slice(0,1);
+      if (c.pendingMessage) {
+        const dot = document.createElement("span");
+        dot.style.cssText = "position:absolute;top:-2px;right:-2px;width:11px;height:11px;border-radius:50%;background:#d9534f;border:2px solid var(--bg);";
+        av2.appendChild(dot);
+      }
 
       const info2 = document.createElement("div");
       info2.className = "info";
       const row = document.createElement("div"); row.className = "name-row";
+      if (c.pinned) { const pinTag = document.createElement("span"); pinTag.textContent="📌"; pinTag.style.fontSize="11px"; row.appendChild(pinTag); }
       const nm2 = document.createElement("span"); nm2.className="name"; nm2.textContent = c.name;
       row.appendChild(nm2);
       if (c.isForeign) { const flag = document.createElement("span"); flag.className="flag"; flag.textContent="🌐"; row.appendChild(flag); }
-      const meta2 = document.createElement("div"); meta2.className="meta"; meta2.textContent = `${c.occupation} · ${calcAge(c.birthDate)}岁 · ${c.tags.slice(0,2).join("/")}`;
+      let metaText;
+      if (c.pendingMessage) {
+        metaText = "💬 " + c.pendingMessage.text;
+      } else {
+        metaText = `${c.occupation} · ${calcAge(c.birthDate)}岁 · ${c.tags.slice(0,2).join("/")}`;
+      }
+      const meta2 = document.createElement("div");
+      meta2.className="meta";
+      meta2.textContent = metaText;
+      if (c.pendingMessage) { meta2.style.color = "var(--accent-soft)"; meta2.style.fontWeight = "700"; meta2.style.whiteSpace="normal"; }
       const stageTag = document.createElement("div"); stageTag.className="stage-tag"; stageTag.textContent = stage.label;
       if (c.relTags && c.relTags.length) {
         stageTag.textContent += "  ·  " + c.relTags.join(" / ");
@@ -1127,6 +1474,12 @@ ${recentHistory}
 
       info2.appendChild(row); info2.appendChild(meta2); info2.appendChild(stageTag); info2.appendChild(bar);
 
+      const pinBtn = document.createElement("button");
+      pinBtn.className = "del-btn";
+      pinBtn.innerHTML = c.pinned ? "📌" : "📍";
+      pinBtn.title = c.pinned ? "取消置顶" : "置顶";
+      pinBtn.onclick = (ev) => this.togglePin(c.id, ev);
+
       const del = document.createElement("button");
       del.className = "del-btn";
       del.innerHTML = '✕';
@@ -1137,7 +1490,7 @@ ${recentHistory}
       memBtn.innerHTML = '☰';
       memBtn.onclick = (ev) => { ev.stopPropagation(); this.openMemoryReview(c.id, "home"); };
 
-      card.appendChild(av2); card.appendChild(info2); card.appendChild(memBtn); card.appendChild(del);
+      card.appendChild(av2); card.appendChild(info2); card.appendChild(pinBtn); card.appendChild(memBtn); card.appendChild(del);
       scroll.appendChild(card);
     });
 
@@ -1629,6 +1982,8 @@ ${othersText}
 - 如果只是普通人被拍到，就是路人吃瓜/八卦网友的反应，可以互相接话、玩梗。
 - 如果通讯录里其他角色刷到后会有反应，让TA也出现在评论区，authorType填"char"并给出charId；评论如果是接着之前某条评论说的，用replyToName标注。
 
+重要：不要生成任何以玩家身份发言的内容——玩家的发言只能由玩家自己输入。
+
 请只输出如下格式的JSON（不要有其它任何文字）：
 {"post":{"authorName":"...","text":"..."},"comments":[{"authorType":"char或passerby","charId":"仅char时填","authorName":"...","text":"...","replyToName":""}]}`;
       let raw = await this.callAI(prompt);
@@ -1667,6 +2022,9 @@ ${othersText}
       const char = this.roster.find(c => c.id === cm.charId);
       if (!char) return null;
       charId = char.id; authorName = char.name;
+    } else {
+      const playerName = this.profile ? this.profile.name.trim() : "";
+      if (playerName && authorName.trim() === playerName) return null;
     }
     return {
       id: "cm_" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
@@ -1685,9 +2043,12 @@ ${othersText}
       const roster = this.roster;
       const profileText = this.profile ? `${this.profile.name}（${this.profile.gender}，${calcAge(this.profile.birthDate)}岁，${this.profile.occupation}）` : "玩家";
       const rosterText = roster.length ? roster.map(c => this.charSummaryForFeed(c)).join("\n") : "（玩家通讯录里还没有年上）";
+      const playerName = this.profile ? this.profile.name : "玩家";
       const prompt = `你在为一个类似微博的社交动态广场生成内容，风格要像真实社交平台：有认识的人，也有一堆互不相识、爱抬杠爱玩梗的路人网友。玩家人设：${profileText}
 玩家通讯录里的年上角色列表：
 ${rosterText}
+
+重要：不要生成任何以玩家（${playerName}）身份发言的内容——玩家的发言只能由玩家自己输入，你生成的内容只能来自路人网友（authorType为passerby）或者上面列出的年上角色（authorType为char）。
 
 请生成2-4条新动态，类型混合：
 - 部分动态来自上面列出的年上角色（authorType填"char"并给出charId），内容是他们的日常生活/心情，不必跟玩家相关；如果某角色带"在外出轨"相关标签，动态里可以有一点若有若无的心虚感或对不上的细节，不用说破。
@@ -1730,7 +2091,7 @@ ${rosterText}
 
   async postAsPlayer(text){
     const trimmed = (text || "").trim();
-    if (!trimmed || this.feedBusy) return;
+    if (!trimmed) return;
     const playerName = this.profile ? this.profile.name : "我";
     const post = {
       id: "post_" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
@@ -1744,7 +2105,7 @@ ${rosterText}
     await this.saveFeed();
     this.render();
 
-    this.feedBusy = true;
+    this.pendingComments.add(post.id);
     this.render();
     try {
       const profileText = this.profile ? `${this.profile.name}（${this.profile.gender}，${calcAge(this.profile.birthDate)}岁，${this.profile.occupation}）` : "玩家";
@@ -1760,6 +2121,8 @@ ${rosterText}
 - 完全无关的路人网友：自己起网名，authorType填"passerby"，可以互相接话、玩梗、抬杠，模拟论坛盖楼效果。
 
 如果评论是接着同一动态下之前某条评论说的，用replyToName标注那条评论作者的名字/网名；如果只是评论原动态，replyToName留空。
+
+重要：不要生成任何以玩家（${playerName}）身份发言的内容——玩家的发言只能由玩家自己输入。
 
 请只输出如下格式的JSON（不要有其它任何文字）：
 {"comments":[{"authorType":"char或passerby","charId":"仅char时填","authorName":"...","text":"...","replyToName":""}]}`;
@@ -1777,13 +2140,13 @@ ${rosterText}
     } catch(e) {
       console.error(e);
     }
-    this.feedBusy = false;
+    this.pendingComments.delete(post.id);
     this.render();
   },
 
   async addFeedComment(postId, text){
     const trimmed = (text || "").trim();
-    if (!trimmed || this.feedBusy) return;
+    if (!trimmed) return;
     const post = this.feed.find(p => p.id === postId);
     if (!post) return;
     const playerName = this.profile ? this.profile.name : "我";
@@ -1797,7 +2160,8 @@ ${rosterText}
     await this.saveFeed();
     this.render();
 
-    this.feedBusy = true;
+    if (this.pendingComments.has(postId)) return;
+    this.pendingComments.add(postId);
     this.render();
     try {
       const existingThread = post.comments.map(c => (c.replyToName ? `（回复${c.replyToName}）` : "") + c.authorName + "：" + c.text).join("\n");
@@ -1812,6 +2176,8 @@ ${rosterText}
 
 请续写接下来的1-3条评论，继续这段讨论——可以是路人接话/玩梗/抬杠，也可以是通讯录角色的反应。每条标注authorType("char"或"passerby")、charId（仅char时需要）、authorName（网名或角色名）、text、以及可选的replyToName（接着哪条之前的评论说，不接就留空）。
 
+重要：不要生成任何以玩家（${playerName}）身份发言的内容——玩家的发言只能由玩家自己输入。
+
 请只输出如下格式的JSON（不要有其它任何文字）：
 {"comments":[{"authorType":"char或passerby","charId":"仅char时填","authorName":"...","text":"...","replyToName":""}]}`;
       let raw = await this.callAI(prompt);
@@ -1825,7 +2191,7 @@ ${rosterText}
     } catch(e) {
       console.error(e);
     }
-    this.feedBusy = false;
+    this.pendingComments.delete(postId);
     this.render();
   },
 
@@ -1863,6 +2229,7 @@ ${rosterText}
           <div class="title">${char.name}</div>
           <div class="sub">${stage.label}</div>
         </div>
+        <button class="back" id="callBtn" title="打电话">📞</button>
         <button class="back" id="exportNovelBtn" title="导出成小说">⬇</button>
         <button class="back" id="memBtn" title="查看记忆">☰</button>
         <button class="back" id="resetBtn" title="重新开始这段对话">↺</button>
@@ -1871,6 +2238,7 @@ ${rosterText}
       <div class="choices-panel" id="choicesPanel"></div>
     `;
     root.querySelector("#backBtn").onclick = () => this.goHome();
+    root.querySelector("#callBtn").onclick = () => this.startCall(char.id);
     root.querySelector("#memBtn").onclick = () => this.openMemoryReview(char.id, "story");
     root.querySelector("#exportNovelBtn").onclick = () => this.exportNovel(char);
     root.querySelector("#resetBtn").onclick = () => {
@@ -1938,6 +2306,26 @@ ${rosterText}
         row.appendChild(edit); row.appendChild(b);
         inner.appendChild(row);
       }
+
+      if (msg.innerThought) {
+        const thoughtCard = document.createElement("div");
+        thoughtCard.className = "thought-card";
+        const header = document.createElement("div");
+        header.className = "thought-header";
+        header.innerHTML = "<span>" + (char.name) + " 的心理</span><span>" + (msg.revealed ? "▴" : "▾") + "</span>";
+        header.onclick = () => {
+          msg.revealed = !msg.revealed;
+          this.render();
+        };
+        thoughtCard.appendChild(header);
+        if (msg.revealed) {
+          const body = document.createElement("div");
+          body.className = "thought-body";
+          body.textContent = msg.innerThought;
+          thoughtCard.appendChild(body);
+        }
+        inner.appendChild(thoughtCard);
+      }
     });
 
     if (this.waitingReply) {
@@ -1948,6 +2336,40 @@ ${rosterText}
     }
 
     const panel = root.querySelector("#choicesPanel");
+
+    if (this.pendingEventPopup && !this.waitingReply) {
+      const ep = this.pendingEventPopup;
+      const overlay = document.createElement("div");
+      overlay.className = "event-overlay";
+      const card = document.createElement("div");
+      card.className = "event-card";
+      const tag = document.createElement("div");
+      tag.className = "event-tag";
+      tag.textContent = ep.tag || "事件";
+      const title = document.createElement("div");
+      title.className = "event-title";
+      title.textContent = ep.title || "";
+      const desc = document.createElement("div");
+      desc.className = "event-desc";
+      desc.textContent = ep.description || "";
+      card.appendChild(tag); card.appendChild(title); card.appendChild(desc);
+      (ep.choices || []).forEach((c, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "event-choice-btn";
+        const lbl = document.createElement("span");
+        lbl.className = "ec-label";
+        lbl.textContent = c.label;
+        const eff = document.createElement("span");
+        eff.className = "ec-effect";
+        eff.textContent = c.effectText || "";
+        btn.appendChild(lbl); btn.appendChild(eff);
+        btn.onclick = () => this.pickEventPopupChoice(idx);
+        card.appendChild(btn);
+      });
+      overlay.appendChild(card);
+      root.appendChild(overlay);
+    }
+
     if (this.fetchError) {
       const box = document.createElement("div");
       box.className = "error-box";
@@ -2129,6 +2551,78 @@ ${rosterText}
 
       scroll.appendChild(card);
     });
+  },
+
+  renderCall(root){
+    const char = this.roster.find(c => c.id === this.activeCharId);
+    if (!char) { this.goHome(); return; }
+
+    if (this.callState === "incoming") {
+      root.innerHTML = `
+        <div class="call-screen">
+          <div class="call-stars"></div>
+          <div class="call-top">✧ incoming call ✧</div>
+          <div class="call-avatar-wrap">
+            <div class="call-avatar" style="background:hsl(${hashHue(char.name)},50%,45%);">${char.name.slice(0,1)}</div>
+          </div>
+          <div class="call-name">${char.name} 来电</div>
+          <div class="call-preview" id="callPreviewText">${this.callPreviewLine ? this.callPreviewLine : "……"}</div>
+          <div class="call-actions">
+            <button class="call-action-btn decline" id="declineBtn">☎</button>
+            <button class="call-action-btn accept" id="acceptBtn">☎</button>
+          </div>
+          <div class="call-action-labels">
+            <span>拒绝</span><span>接听</span>
+          </div>
+        </div>
+      `;
+      root.querySelector("#declineBtn").onclick = () => this.declineCall();
+      root.querySelector("#acceptBtn").onclick = () => this.acceptCall();
+      return;
+    }
+
+    // active call
+    root.innerHTML = `
+      <div class="call-screen call-active">
+        <div class="call-stars"></div>
+        <button class="call-minimize" id="minimizeBtn">⌄</button>
+        <div class="call-avatar-wrap small">
+          <div class="call-avatar" style="background:hsl(${hashHue(char.name)},50%,45%);">${char.name.slice(0,1)}</div>
+        </div>
+        <div class="call-name">${char.name}</div>
+        <div class="call-status">✧ speaking ✧</div>
+        <div class="call-timer" id="callTimerDisplay">00:00</div>
+        <div class="call-transcript" id="callTranscript"></div>
+        <div class="call-input-row">
+          <input type="text" id="callInput" placeholder="说点什么…">
+          <button id="callSendBtn">➤</button>
+        </div>
+        <button class="call-hangup-btn" id="hangupBtn">☎</button>
+      </div>
+    `;
+    const transcriptEl = root.querySelector("#callTranscript");
+    this.callThread.forEach(t => {
+      const line = document.createElement("div");
+      line.className = t.speaker === "char" ? "call-line-char" : "call-line-player";
+      line.textContent = (t.speaker === "char" ? "" : "你：") + t.text;
+      transcriptEl.appendChild(line);
+    });
+    if (this.callBusy) {
+      const typing = document.createElement("div");
+      typing.className = "call-line-char";
+      typing.textContent = "……";
+      transcriptEl.appendChild(typing);
+    }
+    transcriptEl.scrollTop = transcriptEl.scrollHeight;
+
+    const input = root.querySelector("#callInput");
+    const submit = () => { this.sendCallLine(input.value); input.value = ""; };
+    root.querySelector("#callSendBtn").onclick = submit;
+    input.onkeydown = (e) => { if (e.key === "Enter") submit(); };
+    root.querySelector("#hangupBtn").onclick = () => this.hangupCall();
+    root.querySelector("#minimizeBtn").onclick = () => { this.screen = "story"; this.render(); };
+
+    this.startCallTimer();
   }
 };
 
