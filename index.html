@@ -462,7 +462,30 @@
 <div id="stage"><div class="phone" id="phone"></div></div>
 
 <script>
-const TAGS = ["冷淡","毒舌","占有欲强","温柔","幽默风趣","强势","傲娇","理性克制","浪漫","少言寡语","宠溺","高冷学霸"];
+// ---------------- 存储适配：在 Claude 网页里用它自带的 window.storage，在普通浏览器（如 GitHub Pages）里退回 localStorage ----------------
+const IN_CLAUDE_ARTIFACT = !!(window.storage && typeof window.storage.get === "function");
+if (!IN_CLAUDE_ARTIFACT) {
+  // 同一个 github.io 域名下的其它页面共用 localStorage，所以加前缀隔开
+  const LS_PREFIX = "nianshang-xin:";
+  window.storage = {
+    async get(key){
+      let value = null;
+      try { value = localStorage.getItem(LS_PREFIX + key); } catch(e){ console.warn("读取本地存档失败", e); }
+      return value === null ? null : { key, value };
+    },
+    async set(key, value){
+      try { localStorage.setItem(LS_PREFIX + key, value); }
+      catch(e){ throw new Error("保存到浏览器失败（可能是存储空间满了或被浏览器禁用）：" + e.message); }
+      return { key, value };
+    },
+    async delete(key){
+      try { localStorage.removeItem(LS_PREFIX + key); } catch(e){ console.warn("删除本地存档失败", e); }
+      return { key, deleted: true };
+    }
+  };
+}
+
+const TAGS =["冷淡","毒舌","占有欲强","温柔","幽默风趣","强势","傲娇","理性克制","浪漫","少言寡语","宠溺","高冷学霸"];
 
 const STAGES = [
   { key:"meet",        label:"初遇",       min:0,   goal:"初次搭话，建立基础印象，双方还带着礼貌和试探，尚不熟悉" },
@@ -537,10 +560,31 @@ const POWER_PAIR_TAGS = {
 const PROVIDER_PRESETS = {
   builtin:  { label:"内置Claude（默认，无需填key）", baseUrl:"", model:"" },
   deepseek: { label:"DeepSeek", baseUrl:"https://api.deepseek.com/v1/chat/completions", model:"deepseek-chat" },
+  anthropic:{ label:"Claude（Anthropic官方，需自己的key）", baseUrl:"https://api.anthropic.com/v1/messages", model:"claude-opus-5-5" },
   glm:      { label:"智谱GLM", baseUrl:"https://open.bigmodel.cn/api/paas/v4/chat/completions", model:"glm-4-flash" },
   kimi:     { label:"月之暗面 Kimi", baseUrl:"https://api.moonshot.cn/v1/chat/completions", model:"moonshot-v1-8k" },
   custom:   { label:"其他（自定义，需OpenAI兼容格式）", baseUrl:"", model:"" }
 };
+
+// 内置Claude只在 Claude 网页里能用；在别处打开时默认选 DeepSeek，等用户自己填 key
+function defaultAiSettings(){
+  if (IN_CLAUDE_ARTIFACT) return { provider:"builtin", apiKey:"", baseUrl:"", model:"" };
+  const p = PROVIDER_PRESETS.deepseek;
+  return { provider:"deepseek", apiKey:"", baseUrl:p.baseUrl, model:p.model };
+}
+
+function friendlyError(msg){
+  const e = new Error(msg);
+  e.friendly = true;
+  return e;
+}
+
+function httpErrorMessage(status, detail){
+  if (status === 401 || status === 403) return "Key 不对或没有权限（HTTP " + status + "）";
+  if (status === 402) return "账户余额不足（HTTP 402）";
+  if (status === 429) return "请求太频繁或额度用完了（HTTP 429）";
+  return "HTTP " + status + " " + detail;
+}
 
 // ---------------- 预设年上（首次进入自动加入通讯录） ----------------
 const PRESET_CHARACTERS = [
@@ -618,7 +662,8 @@ const App = {
   tempTags: [],
   tempRelTags: [],
   fetchError: false,
-  aiSettings: { provider:"builtin", apiKey:"", baseUrl:"", model:"" },
+  aiSettings: defaultAiSettings(),
+  fetchErrorMsg: "",
   settingsTestMsg: "",
   lastSegmentCount: 0,
   lastAppliedDelta: 0,
@@ -699,6 +744,7 @@ const App = {
     }
     this.render();
 
+    if (!this.aiReady()) return;   // 还没填 key：先不自动调用AI，等用户去设置里填
     if (this.feed.length === 0) {
       this.refreshFeed();
     }
@@ -850,13 +896,15 @@ const App = {
       let reply;
       if (settings.provider === "builtin") {
         reply = await this.callClaude("请只回复两个字：收到");
+      } else if (settings.provider === "anthropic") {
+        reply = await this.callAnthropic("请只回复两个字：收到", settings);
       } else {
         reply = await this.callExternal("请只回复两个字：收到", settings);
       }
       msgEl.textContent = "✓ 连接成功，返回：" + reply.slice(0,20);
       msgEl.style.color = "var(--good)";
     } catch(e) {
-      msgEl.textContent = "✗ 连接失败：" + e.message + "（可能是key不对，或者该服务商不支持浏览器直连）";
+      msgEl.textContent = "✗ 连接失败：" + e.message + (e.friendly ? "" : "（可能是key不对，或者该服务商不支持浏览器直连）");
       msgEl.style.color = "var(--bad)";
     }
     btn.disabled = false;
@@ -1190,10 +1238,23 @@ ${recentHistory}
     return block.text;
   },
 
+  // 网络层失败（断网、或服务商不允许网页直接调用）时 fetch 会直接抛 TypeError，换成看得懂的话
+  async fetchAI(url, options){
+    let response;
+    try { response = await fetch(url, options); }
+    catch(e) { throw friendlyError("连不上AI服务器（可能是网络问题，或这家服务商不允许网页直接调用）"); }
+    if (!response.ok) {
+      let detail = "";
+      try { detail = (await response.text()).slice(0,120); } catch(e){}
+      throw friendlyError(httpErrorMessage(response.status, detail));
+    }
+    return response.json();
+  },
+
   async callExternal(promptText, settings){
-    if (!settings.baseUrl) throw new Error("未填写接口地址");
-    if (!settings.apiKey) throw new Error("未填写API Key");
-    const response = await fetch(settings.baseUrl, {
+    if (!settings.baseUrl) throw friendlyError("未填写接口地址");
+    if (!settings.apiKey) throw friendlyError("未填写API Key");
+    const data = await this.fetchAI(settings.baseUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -1205,22 +1266,53 @@ ${recentHistory}
         max_tokens: 1000
       })
     });
-    if (!response.ok) {
-      let detail = "";
-      try { detail = (await response.text()).slice(0,120); } catch(e){}
-      throw new Error("HTTP " + response.status + " " + detail);
-    }
-    const data = await response.json();
     const content = data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
     if (!content) throw new Error("响应格式不符合预期（未取到choices[0].message.content）");
     return content;
   },
 
+  // 用自己的 Anthropic key 从浏览器直连（需要 anthropic-dangerous-direct-browser-access 头才允许跨域）
+  async callAnthropic(promptText, settings){
+    if (!settings.apiKey) throw friendlyError("未填写API Key");
+    const model = settings.model || PROVIDER_PRESETS.anthropic.model;
+    const headers = {
+      "Content-Type": "application/json",
+      "x-api-key": settings.apiKey,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    };
+    // 这几款模型被安全审查拒绝时，可以让服务器自动换一个模型重试
+    const body = { model, max_tokens: 16000, messages: [{ role: "user", content: promptText }] };
+    if (/^claude-(opus-5|fable-5-1|sonnet-5-5)/.test(model)) {
+      headers["anthropic-beta"] = "server-side-fallback-2026-07-01";
+      body.fallbacks = "default";
+    }
+    const data = await this.fetchAI(settings.baseUrl || PROVIDER_PRESETS.anthropic.baseUrl, {
+      method: "POST", headers, body: JSON.stringify(body)
+    });
+    if (data.stop_reason === "refusal") throw friendlyError("这一段AI拒绝生成，换个选项或点重试");
+    // 发生过自动换模型时，只取最后一次换模型之后的文字
+    const blocks = data.content || [];
+    let start = 0;
+    blocks.forEach((b, i) => { if (b.type === "fallback") start = i + 1; });
+    const text = blocks.slice(start).filter(b => b.type === "text").map(b => b.text).join("");
+    if (!text) throw new Error("空响应");
+    return text;
+  },
+
+  aiReady(){
+    if (IN_CLAUDE_ARTIFACT) return true;
+    const s = this.aiSettings;
+    return !!(s && s.provider !== "builtin" && s.apiKey);
+  },
+
   async callAI(promptText){
     const s = this.aiSettings;
     if (!s || s.provider === "builtin" || !s.apiKey) {
+      if (!IN_CLAUDE_ARTIFACT) throw friendlyError("还没设置AI：回到通讯录，点右上角 ⚙ 填上你的 API Key");
       return this.callClaude(promptText);
     }
+    if (s.provider === "anthropic") return this.callAnthropic(promptText, s);
     return this.callExternal(promptText, s);
   },
 
@@ -1281,6 +1373,7 @@ ${recentHistory}
       console.error(e);
       this.waitingReply = false;
       this.fetchError = true;
+      this.fetchErrorMsg = e && e.friendly ? e.message : "";
       this.render();
     }
   },
@@ -1771,8 +1864,10 @@ ${recentHistory}
   },
 
   renderSettings(root){
-    const s = this.aiSettings || { provider:"builtin", apiKey:"", baseUrl:"", model:"" };
-    const providerOptions = Object.keys(PROVIDER_PRESETS).map(key =>
+    let s = this.aiSettings || defaultAiSettings();
+    // 不在 Claude 网页里时，内置Claude用不了，不显示这一项
+    if (!IN_CLAUDE_ARTIFACT && (!s.provider || s.provider === "builtin")) s = { ...defaultAiSettings(), apiKey: s.apiKey || "" };
+    const providerOptions = Object.keys(PROVIDER_PRESETS).filter(key => IN_CLAUDE_ARTIFACT || key !== "builtin").map(key =>
       `<option value="${key}" ${s.provider===key?"selected":""}>${PROVIDER_PRESETS[key].label}</option>`
     ).join("");
 
@@ -1795,7 +1890,7 @@ ${recentHistory}
         <div id="testMsg" style="font-size:12.5px; margin-top:8px; min-height:16px;"></div>
         <button class="primary-btn" id="saveBtn" style="margin-top:16px;">保存设置</button>
         <p style="font-size:11.5px; color:var(--muted); margin-top:14px; line-height:1.7;">
-          提示：这个游戏是纯前端跑在你浏览器里的，没有后端服务器，所以Key是明文存在你本机浏览器里的（不会传给我或Anthropic），也不会跨设备同步。部分服务商可能不支持浏览器直接调用（CORS限制），如果测试连接失败，大概率是这个原因。
+          提示：这个游戏是纯前端跑在你浏览器里的，没有后端服务器，所以Key是明文存在你本机浏览器里的，只会发给你选的那家AI服务商，不会传到别处，也不会跨设备同步。部分服务商可能不支持浏览器直接调用（CORS限制），如果测试连接失败，大概率是这个原因。
         </p>
 
         <div style="height:1px;background:var(--line);margin:22px 0;"></div>
@@ -2374,7 +2469,9 @@ ${rosterText}
       const box = document.createElement("div");
       box.className = "error-box";
       box.style.margin = "0";
-      box.innerHTML = "生成失败了，可能是网络或接口的问题。";
+      const msg = document.createElement("div");
+      msg.textContent = this.fetchErrorMsg ? "生成失败了：" + this.fetchErrorMsg : "生成失败了，可能是网络或接口的问题。";
+      box.appendChild(msg);
       const btn = document.createElement("button");
       btn.textContent = "重试";
       btn.onclick = () => this.retryFetch();
@@ -2462,7 +2559,9 @@ ${rosterText}
     if (this.feed.length === 0) {
       const hint = document.createElement("div");
       hint.className = "empty-hint";
-      hint.textContent = "还没有动态，点右上角刷新试试，或者自己先发一条。";
+      hint.textContent = this.aiReady()
+        ? "还没有动态，点右上角刷新试试，或者自己先发一条。"
+        : "还没设置AI：回到通讯录，点右上角 ⚙ 填上你的 API Key，再回来点刷新。";
       scroll.appendChild(hint);
     }
 
